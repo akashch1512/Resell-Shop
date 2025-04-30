@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from urllib.parse import urlparse
+
+DATABASE_URL = os.getenv('DATABASE_URL')
+url = urlparse(DATABASE_URL)
 
 load_dotenv() 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -81,12 +85,12 @@ WSGI_APPLICATION = 'eShop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '3306'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': url.path[1:],  # The name of the database
+        'USER': url.username,  # The database username
+        'PASSWORD': url.password,  # The password
+        'HOST': url.hostname,  # The hostname
+        'PORT': url.port,  # The port
     }
 }
 
