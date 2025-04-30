@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock title %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'img/favicon.ico' %}">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.min.css' %}" />
+    {% block style %}{% endblock style %}
+    
+    <style>
+        :root {
+            --primary-bg: #FFD700; /* Yellow background */
+            --secondary-bg: #f5f5f5; /* Grey container */
+            --dark-bg: #333; /* Dark elements */
+            --light-text: #FFD700; /* Yellow text */
+            --dark-text: #333; /* Dark text */
+            --accent-color: #ffcc00; /* Yellow hover */
+        }
+        
+        body {
+            background-color: var(--primary-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .profile-container {
+            background: var(--secondary-bg);
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .profile-header {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .profile-content {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-bg);
+            color: var(--dark-text);
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: var(--dark-text);
+        }
+        
+        .profile-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .profile-section:last-child {
+            border-bottom: none;
+        }
+        
+        .info-item {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            width: 150px;
+            color: #555;
+        }
+        
+        .info-value {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .address-card {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 5px;
+            border-left: 4px solid var(--dark-bg);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .edit-form {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-control:focus {
+            border-color: var(--dark-bg);
+            box-shadow: 0 0 0 0.25rem rgba(51, 51, 51, 0.25);
+        }
+        
+        .btn-update {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            padding: 0.5rem 1.5rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-update:hover {
+            background-color: #444;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: var(--light-text);
+        }
+        
+        @media (max-width: 768px) {
+            .profile-content {
+                padding: 1rem;
+            }
+            
+            .info-item {
+                flex-direction: column;
+            }
+            
+            .info-label {
+                width: 100%;
+                margin-bottom: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row bg-secondary py-1 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center h-100">
+                    <a class="text-body mr-3" href="">About</a>
+                    <a class="text-body mr-3" href="{% url 'contact' %}">Contact</a>
+                    <a class="text-body mr-3" href="">Help</a>
+                    <a class="text-body mr-3" href="">FAQs</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            My Account
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            {% if user.is_authenticated %}
+                                <button onclick="location.href='/user_info'" class="dropdown-item" type="button">Profile</button>
+                                <button onclick="location.href='/logout'" class="dropdown-item" type="button">Log out</button>
+                            {% else %}
+                                <button onclick="location.href='/login'" class="dropdown-item" type="button">Sign in</button>
+                                <button onclick="location.href='/sign_up'" class="dropdown-item" type="button">Sign up</button>
+                            {% endif %}
+                        </div>
+                    </div>    
+                </div>
+                <div class="d-inline-flex align-items-center d-block d-lg-none">
+                    <a href="" class="btn px-0 ml-2">
+                        <i class="fas fa-heart text-dark"></i>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                    </a>
+                    <a href="" class="btn px-0 ml-2">
+                        <i class="fas fa-shopping-cart text-dark"></i>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="{% url 'index' %}" class="text-decoration-none">
+                    <span class="h1 text-uppercase text-primary bg-dark px-2">re</span>
+                    <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">sale</span>
+                </a>
+            </div>
+
+            <!-- Search bar -->
+            <div class="col-lg-4 col-6 text-left">
+                <form action="{% url 'shop'%}" method='GET'>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-4 col-6 text-right">
+                <p class="m-0">Customer Service</p>
+                <h5 class="m-0">+012 345 6789</h5>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Profile Content -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1 class="mb-0" style="color: #facc15 !important;">User Profile</h1>
+
+        </div>
+        
+        <div class="profile-content">
+            <a href="javascript:history.back()" class="back-btn">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Previous Page
+            </a>
+            
+            <!-- Personal Information Section -->
+            <div class="profile-section">
+                <h2 class="mb-3">Personal Information</h2>
+                <div class="info-item">
+                    <div class="info-label">Name:</div>
+                    <div class="info-value">{{ first_name }} {{ last_name }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email:</div>
+                    <div class="info-value">{{ email }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Phone:</div>
+                    <div class="info-value">{{ phone }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Last Login:</div>
+                    <div class="info-value">{{ last_login }}</div>
+                </div>
+            </div>
+            
+            <!-- Address Section -->
+            <div class="profile-section">
+                <h2 class="mb-3">Address</h2>
+                {% if address %}
+                    <div class="address-card">
+                        {{ address.locality }}, {{ address.city }}, {{ address.state }} - {{ address.postal_code }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">No address found.</div>
+                {% endif %}
+            </div>
+            
+            <!-- Edit Profile Form -->
+            <div class="profile-section">
+                <h2 class="mb-3">Edit Profile</h2>
+                <form method="POST" class="edit-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ first_name }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ last_name }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ phone }}">
+                    </div>
+                    
+                    <h4 class="mt-4 mb-3">Address</h4>
+                    
+                    <div class="form-group">
+                        <label for="user_locality">Locality</label>
+                        <input type="text" class="form-control" id="user_locality" name="user_locality" value="{{ address.locality|default:'' }}">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="user_city">City</label>
+                            <input type="text" class="form-control" id="user_city" name="user_city" value="{{ address.city|default:'' }}">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="user_state">State</label>
+                            <input type="text" class="form-control" id="user_state" name="user_state" value="{{ address.state|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user_postal_code">Postal Code</label>
+                        <input type="text" class="form-control" id="user_postal_code" name="user_postal_code" value="{{ address.postal_code|default:'' }}">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-update mt-3">
+                        <i class="fas fa-save mr-2"></i>Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
