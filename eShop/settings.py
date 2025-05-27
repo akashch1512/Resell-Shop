@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -148,20 +148,28 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
 
 
-#mannualy added
-import mimetypes
-mimetypes.add_type("text/css", ".css", True)
+# #mannualy added
+# import mimetypes
+# mimetypes.add_type("text/css", ".css", True)
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS=[
+#     BASE_DIR / 'static'
+# ]
+
+STATIC_URL = '/static/'
+
+# For development only (optional)
+# STATICFILES_DIRS = [BASE_DIR / "static"]  # if you have custom static files
+
+# For production or when running collectstatic
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS=[
-    BASE_DIR / 'static'
-]
 
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+# MEDIA_URL = 'media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 
 AUTH_USER_MODEL ='home.User'

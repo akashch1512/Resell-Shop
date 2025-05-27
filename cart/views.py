@@ -106,46 +106,69 @@ def checkout(request):
     }
     return render(request,"cart/checkout.html",context)
 
+from django.http import HttpResponseBadRequest
 
 @login_required(login_url="/login")
 def place_order(request):
-    if request.method=="POST":
+    if request.method == "POST":
         cart_items = Cart.objects.filter(user=request.user)
         address_id = request.POST.get('address')
         mobile = request.POST.get('mobile')
-        address = Address.objects.get(Q(user=request.user) & Q(id=address_id))
+
+        # ✅ Get address safely
+        address = None
+        if address_id:
+            try:
+                address = Address.objects.get(user=request.user, id=address_id)
+            except Address.DoesNotExist:
+                return HttpResponseBadRequest("Address does not exist.")
+        else:
+            address = Address.objects.filter(user=request.user).first()
+            if not address:
+                return HttpResponseBadRequest("No address available. Please add one.")
+
         razorpay_order_id = request.POST.get('razorpay_order_id')
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
-        payment = Payment(  user = request.user, 
-                            razorpay_order_id=razorpay_order_id , 
-                            razorpay_payment_id=razorpay_payment_id,
-                            paid=True
-                         )
+
+        payment = Payment(
+            user=request.user,
+            razorpay_order_id=razorpay_order_id,
+            razorpay_payment_id=razorpay_payment_id,
+            paid=True
+        )
         payment.save()
 
-        shipping=0
-        total_amount=0
+        shipping = 0
+        total_amount = 0
+
         for item in cart_items:
-            order_amount = item.product.price*item.quantity + shipping
+            order_amount = item.product.price * item.quantity + shipping
             total_amount += order_amount
+
             if mobile and address:
                 product = item.product
                 product.count -= item.quantity
-                new_order = Order(customer=request.user,         
-                                delivery_address=address,
-                                product=item.product,
-                                quantity=item.quantity,
-                                customer_mobile=mobile,
-                                order_amount=order_amount,
-                                payment=payment)
+
+                new_order = Order(
+                    customer=request.user,
+                    delivery_address=address,
+                    product=product,
+                    quantity=item.quantity,
+                    customer_mobile=mobile,
+                    order_amount=order_amount,
+                    payment=payment
+                )
                 new_order.save()
                 product.save()
                 item.delete()
-        
+
         payment.total_amount = total_amount
         payment.save()
-            
-    return render(request,"cart/order_confirm.html")
+
+        return render(request, "cart/order_confirm.html")
+
+    return HttpResponseBadRequest("Invalid request method.")
+
 
 
 @login_required(login_url="/login")
